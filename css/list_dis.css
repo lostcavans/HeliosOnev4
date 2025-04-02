@@ -1,0 +1,120 @@
+/* Estilos generales de la tabla */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Sombra más profunda */
+    border-radius: 10px; /* Bordes redondeados */
+    overflow: hidden; /* Para que no sobresalgan las esquinas de la sombra */
+}
+
+/* Estilos para las celdas */
+table, th, td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+    font-size: 15px;
+    transition: all 0.3s ease; /* Transición suave para todo */
+}
+
+/* Estilo de los encabezados de las columnas */
+th {
+    background-color: #a31900; /* Azul más cálido */
+    color: rgb(0, 0, 0);
+    font-weight: bold;
+    text-transform: uppercase; /* Mayúsculas */
+}
+
+/* Estilos para las filas de la tabla */
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Efecto al pasar el ratón sobre las filas */
+tr:hover {
+    background-color: #e3e9f3; /* Color suave de hover */
+    transform: scale(1.02); /* Levele efecto de zoom */
+}
+
+/* Efecto al pasar el ratón sobre las celdas */
+td:hover {
+    background-color: #f1f1f1; /* Cambio de color en celda */
+}
+
+/* Estilos de los botones */
+button {
+    background-color: #28a745; /* Verde brillante */
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-right: 8px;
+    transition: background-color 0.3s, transform 0.2s; /* Transición y animación */
+}
+
+button:hover {
+    background-color: #218838; /* Color más oscuro al pasar el ratón */
+    transform: scale(1.05); /* Efecto de escala */
+}
+
+/* Estilos de botones de estado */
+.status-button {
+    padding: 8px 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    text-align: center;
+    transition: background-color 0.3s, transform 0.2s; /* Transición para el hover */
+}
+
+.status-button.active {
+    background-color: #28a745;
+    color: white;
+}
+
+.status-button.inactive {
+    background-color: #dc3545;
+    color: white;
+}
+
+.status-button:hover {
+    opacity: 0.8;
+    transform: scale(1.05); /* Efecto de zoom en hover */
+}
+
+/* Estilos para los encabezados */
+h2 {
+    color: #333;
+    font-size: 28px;
+    margin-bottom: 25px;
+    text-align: center;
+    font-weight: bold;
+    text-transform: uppercase; /* Mayúsculas */
+    letter-spacing: 2px; /* Espaciado entre letras */
+}
+
+/* Contenedor principal de la página */
+.full-box {
+    padding: 25px;
+    margin-top: 25px;
+}
+
+/* Estilos para los contenedores */
+.dashboard-contentPage {
+    background-color: #fff;
+    border-radius: 15px; /* Bordes redondeados */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    transition: all 0.3s ease; /* Transición suave */
+}
+
+.dashboard-contentPage:hover {
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.15); /* Sombra al hacer hover */
+}
+
+/* Espaciado superior adicional para la tabla */
+section .dashboard-contentPage {
+    margin-top: 30px;
+}

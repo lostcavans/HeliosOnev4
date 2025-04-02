@@ -1,0 +1,5 @@
+Table: , Id: , BattV: , TempAmb: , Pbar: , PrecipP: , Rad: , RH: , DirV: , VelV: 
+Table: , Id: , BattV: , TempAmb: , Pbar: , PrecipP: , Rad: , RH: , DirV: , VelV: 
+Table: , Id: , BattV: , TempAmb: , Pbar: , PrecipP: , Rad: , RH: , DirV: , VelV: 
+Table: , Id: , BattV: , TempAmb: , Pbar: , PrecipP: , Rad: , RH: , DirV: , VelV: 
+Table: , Id: , BattV: , TempAmb: , Pbar: , PrecipP: , Rad: , RH: , DirV: , VelV: 

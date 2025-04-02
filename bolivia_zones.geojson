@@ -1,0 +1,26 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {
+          "zona": "Zona 1",
+          "name": "Zona 1",
+          "users_count": 100
+        },
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [-68.119, -16.5],
+              [-68.2, -16.5],
+              [-68.2, -16.6],
+              [-68.119, -16.6],
+              [-68.119, -16.5]
+            ]
+          ]
+        }
+      }
+    ]
+  }
+  

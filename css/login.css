@@ -1,0 +1,108 @@
+/* Estilos generales para el fondo de la página */
+body.cover {
+    background-size: cover;
+    background-position: center;
+    color: #ffffff;
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; /* Ocupa toda la altura de la ventana del navegador */
+    margin: 0; /* Elimina márgenes predeterminados del body */
+}
+
+/* Contenedor del formulario de inicio de sesión */
+.container-login {
+    background-color: rgba(0, 0, 0, 0.8); /* Fondo oscuro con mayor transparencia */
+    padding: 40px;
+    border-radius: 12px; /* Bordes más redondeados */
+    width: 90%;
+    max-width: 350px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Sombra sutil */
+}
+
+/* Estilos para los íconos */
+.container-login i.zmdi {
+    color: #a31900; /* Color verde más brillante para los íconos */
+    margin-bottom: 10px;
+}
+
+/* Estilos para el texto de inicio de sesión */
+.container-login p {
+    color: #ffffff;
+    font-size: 20px; /* Tamaño de fuente ligeramente más grande */
+    font-weight: bold; /* Texto en negrita */
+    margin: 15px 0;
+}
+
+/* Estilos para los campos de entrada */
+.input-field {
+    position: relative;
+    margin-bottom: 25px; /* Mayor espacio entre campos */
+}
+
+/* Estilos para los labels dentro de los campos de entrada */
+.input-field label {
+    color: #bbbbbb; /* Color gris claro para los labels */
+    font-size: 14px; /* Tamaño de fuente del label */
+}
+
+.input-field input {
+    background-color: #333; /* Fondo oscuro para los campos de entrada */
+    border: 1px solid #fff; /* Agrega un borde temporal */
+    color: #ffffff;
+    border-radius: 4px;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box; /* Incluye el padding en el ancho del campo */
+}
+
+/* Estilos para los botones */
+button {
+    background-color: #a31900; /* Color verde más brillante */
+    color: #ffffff;
+    border: none;
+    padding: 12px 24px; /* Mayor tamaño del botón */
+    border-radius: 6px; /* Bordes del botón más redondeados */
+    font-size: 18px; /* Tamaño de fuente más grande */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Transición para el color y el efecto de clic */
+}
+
+/* Efecto al pasar el ratón sobre el botón */
+button:hover {
+    background-color: #ec2c09; /* Color verde más oscuro */
+    transform: scale(1.05); /* Aumento leve del botón */
+}
+
+/* Estilos para el enlace de "Crear cuenta" */
+a {
+    color: #a31900; /* Color verde para el enlace */
+    text-decoration: none; /* Elimina el subrayado */
+    font-size: 16px;
+    display: inline-block;
+    margin-top: 20px;
+    font-weight: bold; /* Enlace en negrita */
+}
+
+/* Estilo para el enlace de "Crear cuenta" al pasar el ratón */
+a:hover {
+    text-decoration: underline; /* Subrayado al pasar el ratón */
+}
+
+/* Estilos para el separador de contenido */
+.divider {
+    border-top: 1px solid #ffffff;
+    margin: 20px 0;
+}
+
+.password-toggle {
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    top: 50%; /* Mantén este valor en 50% */
+    margin-top: -12px; /* Ajusta este valor negativo según sea necesario */
+    color: #a31900;
+}
+
