@@ -1,85 +1,128 @@
 <?php
-include 'db.php';
-session_start();
+// update_user.php
+require_once 'db.php';
+require_once 'auth_check.php';
 
-    
-// Obtener los datos del formulario
-$id_user = $_POST['id_user'] ?? 0;
-$nom_user = $_POST['nom_user'] ?? '';
-$apel_user = $_POST['apel_user'] ?? '';
-$cel_user = $_POST['cel_user'] ?? '';
-$dir_user = $_POST['dir_user'] ?? '';
-$fec_nac_user = $_POST['fec_nac_user'] ?? '';
-$email_user = $_POST['email_user'] ?? '';
-$CI_user = $_POST['CI_user'] ?? '';
-$gen_user = $_POST['gen_user'] ?? '';
-$status_user = $_POST['status_user'] ?? '';
-$id_cargo = $_POST['id_cargo'] ?? '';
-$id_dis = $_POST['id_dis'] ?? '';
-$pass_user = $_POST['pass_user'] ?? '';
+check_auth();
 
-// Validar que el ID del usuario sea válido
-if (!$id_user) {
-    echo json_encode(['success' => false, 'message' => 'ID de usuario no válido.']);
-    exit;
-}
+header('Content-Type: application/json');
 
 try {
-    // Preparar la consulta SQL para actualizar el usuario
-    $sql = "UPDATE user SET 
-            nom_user = :nom_user, 
-            apel_user = :apel_user, 
-            cel_user = :cel_user, 
-            dir_user = :dir_user, 
-            fec_nac_user = :fec_nac_user, 
-            email_user = :email_user, 
-            CI_user = :CI_user, 
-            gen_user = :gen_user, 
-            status_user = :status_user, 
-            id_cargo = :id_cargo, 
-            id_dis = :id_dis";
-
-    // Si se proporciona una nueva contraseña, actualizarla
-    if (!empty($pass_user)) {
-        $sql .= ", pass_user = :pass_user";
+    // Validar datos
+    $required = ['id_user', 'nom_user', 'apel_user', 'CI_user', 'fec_nac_user', 
+                'id_cargo', 'id_dis', 'email_user', 'cel_user', 'dir_user', 'gen_user'];
+    
+    foreach ($required as $field) {
+        if (empty($_POST[$field])) {
+            throw new Exception("El campo $field es obligatorio");
+        }
     }
-
-    $sql .= " WHERE id_user = :id_user";
-
-    // Preparar la consulta
-    $stmt = $pdo->prepare($sql);
-
-    // Bind de los parámetros
-    $params = [
-        ':nom_user' => $nom_user,
-        ':apel_user' => $apel_user,
-        ':cel_user' => $cel_user,
-        ':dir_user' => $dir_user,
-        ':fec_nac_user' => $fec_nac_user,
-        ':email_user' => $email_user,
-        ':CI_user' => $CI_user,
-        ':gen_user' => $gen_user,
-        ':status_user' => $status_user,
-        ':id_cargo' => $id_cargo,
-        ':id_dis' => $id_dis,
-        ':id_user' => $id_user,
+    
+    $id_user = (int)$_POST['id_user'];
+    
+    // Verificar si el usuario existe
+    $stmt = $pdo->prepare("SELECT * FROM user WHERE id_user = ?");
+    $stmt->execute([$id_user]);
+    $user = $stmt->fetch();
+    
+    if (!$user) {
+        throw new Exception("Usuario no encontrado");
+    }
+    
+    // Procesar foto si se subió
+    $foto_user = $user['foto_user'];
+    if (!empty($_FILES['user_photo']['name'])) {
+        $uploadDir = 'uploads/users/';
+        if (!file_exists($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+        
+        $photo = $_FILES['user_photo'];
+        $allowedTypes = ['image/jpeg', 'image/png'];
+        $maxSize = 2 * 1024 * 1024; // 2MB
+        
+        if (!in_array($photo['type'], $allowedTypes)) {
+            throw new Exception("Solo se permiten imágenes JPG o PNG");
+        }
+        
+        if ($photo['size'] > $maxSize) {
+            throw new Exception("La imagen no debe superar 2MB");
+        }
+        
+        // Eliminar foto anterior si existe
+        if (!empty($foto_user) && file_exists($foto_user)) {
+            unlink($foto_user);
+        }
+        
+        // Generar nuevo nombre
+        $fileExt = pathinfo($photo['name'], PATHINFO_EXTENSION);
+        $fileName = 'user_' . $id_user . '.' . $fileExt;
+        $filePath = $uploadDir . $fileName;
+        
+        if (!move_uploaded_file($photo['tmp_name'], $filePath)) {
+            throw new Exception("Error al guardar la imagen");
+        }
+        
+        $foto_user = 'uploads/users/' . $fileName;
+    }
+    
+    // Preparar datos para actualización
+    $data = [
+        'nom_user' => trim($_POST['nom_user']),
+        'apel_user' => trim($_POST['apel_user']),
+        'CI_user' => preg_replace('/[^0-9]/', '', $_POST['CI_user']),
+        'fec_nac_user' => $_POST['fec_nac_user'],
+        'id_cargo' => (int)$_POST['id_cargo'],
+        'id_dis' => trim($_POST['id_dis']),
+        'email_user' => filter_var(trim($_POST['email_user']), FILTER_SANITIZE_EMAIL),
+        'cel_user' => preg_replace('/[^0-9]/', '', $_POST['cel_user']),
+        'dir_user' => trim($_POST['dir_user']),
+        'gen_user' => (int)$_POST['gen_user'],
+        'status_user' => (int)$_POST['status_user'],
+        'foto_user' => $foto_user,
+        'id_user' => $id_user
     ];
-
-    // Si se proporciona una nueva contraseña, agregarla a los parámetros
-    if (!empty($pass_user)) {
-        $params[':pass_user'] = $pass_user; // Guardar la contraseña sin hash
+    
+    // Actualizar contraseña si se proporcionó
+    $passwordUpdate = '';
+    if (!empty($_POST['pass_user'])) {
+        if (strlen($_POST['pass_user']) < 8) {
+            throw new Exception("La contraseña debe tener al menos 8 caracteres");
+        }
+        $data['pass_user'] = password_hash($_POST['pass_user'], PASSWORD_BCRYPT);
+        $passwordUpdate = ', pass_user = :pass_user';
     }
-
-    // Ejecutar la consulta
-    $stmt->execute($params);
-
-    // Respuesta JSON en caso de éxito
+    
+    // Consulta SQL
+    $sql = "UPDATE user SET 
+            nom_user = :nom_user,
+            apel_user = :apel_user,
+            CI_user = :CI_user,
+            fec_nac_user = :fec_nac_user,
+            id_cargo = :id_cargo,
+            id_dis = :id_dis,
+            email_user = :email_user,
+            cel_user = :cel_user,
+            dir_user = :dir_user,
+            gen_user = :gen_user,
+            status_user = :status_user,
+            foto_user = :foto_user
+            $passwordUpdate
+            WHERE id_user = :id_user";
+    
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($data);
+    
     echo json_encode([
         'success' => true,
-        'message' => 'Usuario actualizado con éxito.',
-        'redirect' => 'list_user.php' // URL de redirección
+        'message' => 'Usuario actualizado correctamente',
+        'redirect' => 'list_users.php' // Cambia esto por tu página de listado
     ]);
-} catch (PDOException $e) {
-    // Manejar errores de la base de datos
-    echo json_encode(['success' => false, 'message' => 'Error al actualizar el usuario: ' . $e->getMessage()]);
+    
+} catch (Exception $e) {
+    http_response_code(400);
+    echo json_encode([
+        'success' => false,
+        'message' => $e->getMessage()
+    ]);
 }

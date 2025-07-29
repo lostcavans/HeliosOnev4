@@ -3,7 +3,8 @@
         "setasign/fpdi": "*",
         "myclabs/deep-copy": "*",
         "spipu/html2pdf": "^5.2",
-        "tecnickcom/tcpdf": "^6.7",
-        "dompdf/dompdf": "^3.0"
+        "tecnickcom/tcpdf": "^6.10",
+        "dompdf/dompdf": "^3.0",
+        "phpoffice/phpspreadsheet": "^4.4"
     }
 }

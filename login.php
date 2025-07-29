@@ -6,12 +6,9 @@
     <title>Sistema de gerenciamiento de cuerpo de Bomberos - La Paz/Bolivia</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="css/login.css">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
-
     <style>
         body.cover {
             background-size: cover;
@@ -43,7 +40,7 @@
         }
         .input-field input {
             background-color: #333;
-            border: 1px solid #fff; /* Temporal */
+            border: 1px solid #fff;
             color: #ffffff;
             border-radius: 4px;
             padding: 10px;
@@ -56,7 +53,20 @@
             right: 10px;
             top: 50%;
             transform: translateY(-50%);
-            color: #a31900; /* Asegúrate de que el color sea visible */
+            color: #a31900;
+        }
+        .btn-login {
+            background-color: #a31900;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .btn-login:hover {
+            background-color: #8a1500;
         }
     </style>
 </head>
@@ -75,26 +85,20 @@
                 <input id="Password" name="password" type="password" class="validate" required>
                 <label for="Password"><i class="zmdi zmdi-lock"></i>&nbsp; Contraseña</label>
                 <i class="fas fa-eye password-toggle" id="togglePassword"></i>
-
             </div>
-            <button type="submit" class="waves-effect waves-teal btn-flat">Ingresar &nbsp; </button>
+            <button type="submit" class="btn-login">Ingresar</button>
         </form>
         <div class="divider" style="margin: 20px 0;"></div>
-        <a href="register_client.php">Crear cuenta</a>
+        <a href="register_client.php" style="color: #a31900;">Crear cuenta</a>
     </div>
+
     <script src="./js/jquery-3.1.1.min.js"></script>
-    <script src="./js/bootstrap.min.js"></script>
-    <script src="./js/material.min.js"></script>
-    <script src="./js/ripples.min.js"></script>
-    <script src="./js/jquery.mCustomScrollbar.concat.min.js"></script>
-    <script src="./js/main.js"></script>
     <script>
         document.getElementById("togglePassword").addEventListener("click", function() {
             const passwordInput = document.getElementById("Password");
             const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
             passwordInput.setAttribute("type", type);
-            this.classList.toggle("zmdi-eye-off"); // Cambiar a ícono de ojo cerrado
-            this.classList.toggle("zmdi-eye"); // Cambiar a ícono de ojo abierto
+            this.classList.toggle("fa-eye-slash");
         });
 
         document.getElementById("loginForm").addEventListener("submit", function(event) {
@@ -102,8 +106,15 @@
             const email = document.getElementById("Email").value;
             const password = document.getElementById("Password").value;
 
+            // Mostrar loader
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
+            submitBtn.disabled = true;
+
             fetch('loginCN.php', {
                 method: 'POST',
+                credentials: 'include', // Esto es esencial para manejar cookies
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
@@ -112,10 +123,27 @@
                     'password': password
                 })
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error en la red');
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.status === "success") {
-                    window.location.href = "map.php";
+                    // Redirigir después de mostrar mensaje
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Bienvenido!',
+                        text: 'Redirigiendo al sistema...',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        background: '#333',
+                        color: '#fff'
+                    }).then(() => {
+                        // Forzar recarga completa con parámetro de cache
+                        window.location.href = data.redirect + '?r=' + Date.now();
+                    });
                 } else if (data.status === "deactivated") {
                     Swal.fire({
                         icon: 'warning',
@@ -128,12 +156,11 @@
                 } else {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Oops...',
-                        text: data.message,
+                        title: 'Error de autenticación',
+                        text: data.message || 'Credenciales incorrectas',
                         confirmButtonColor: '#a31900',
                         background: '#333',
-                        color: '#fff',
-                        footer: '¿Olvidaste tu contraseña?'
+                        color: '#fff'
                     });
                 }
             })
@@ -147,7 +174,46 @@
                     background: '#333',
                     color: '#fff'
                 });
+            })
+            .finally(() => {
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
             });
+        });
+
+        // Verificar si hay parámetros de error en la URL
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const error = urlParams.get('error');
+            
+            if (error === 'session_expired') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Sesión expirada',
+                    text: 'Por favor ingresa nuevamente',
+                    confirmButtonColor: '#a31900',
+                    background: '#333',
+                    color: '#fff'
+                });
+            } else if (error === 'invalid_session') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Sesión inválida',
+                    text: 'Debes iniciar sesión nuevamente',
+                    confirmButtonColor: '#a31900',
+                    background: '#333',
+                    color: '#fff'
+                });
+            } else if (error === 'invalid_session_data') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de sesión',
+                    text: 'Los datos de sesión son inválidos',
+                    confirmButtonColor: '#a31900',
+                    background: '#333',
+                    color: '#fff'
+                });
+            }
         });
     </script>
 </body>

@@ -1,0 +1,339 @@
+/* Estilos específicos para el módulo de credencial */
+.credential-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    background-color: #f5f7fa;
+}
+
+.credential-card {
+    width: 100%;
+    max-width: 800px;
+    background: linear-gradient(145deg, #1a2a4f, #2c3e50);
+    border-radius: 15px;
+    color: white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.credential-header {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 15px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.credential-title {
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #fff;
+}
+
+.credential-logo {
+    height: 50px;
+    width: auto;
+}
+
+.credential-body {
+    display: flex;
+    padding: 25px;
+    gap: 25px;
+}
+
+.credential-photo-section {
+    width: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.credential-photo-preview {
+    width: 150px;
+    height: 180px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.credential-photo-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.photo-placeholder {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+}
+
+.photo-placeholder i {
+    font-size: 40px;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.photo-input {
+    display: none;
+}
+
+.credential-fields {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.credential-field {
+    margin-bottom: 10px;
+}
+
+.credential-label {
+    display: block;
+    font-size: 12px;
+    margin-bottom: 5px;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+}
+
+.credential-input {
+    width: 100%;
+    padding: 10px 12px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    color: rgb(0, 0, 0);
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.credential-input:focus {
+    outline: none;
+    border-color: #3498db;
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.credential-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+select.credential-input {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 15px;
+}
+
+.credential-qr-section {
+    width: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.qr-placeholder {
+    width: 100px;
+    height: 100px;
+    background-color: white;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    text-align: center;
+    padding: 10px;
+}
+
+.qr-placeholder i {
+    font-size: 40px;
+    margin-bottom: 5px;
+}
+
+.qr-placeholder span {
+    font-size: 10px;
+    line-height: 1.2;
+}
+
+.password-field {
+    grid-column: span 2;
+}
+
+.password-container {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 16px;
+}
+
+.password-strength {
+    height: 4px;
+    margin-top: 8px;
+    border-radius: 2px;
+    background-color: rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+}
+
+.strength-weak {
+    background-color: #e74c3c;
+    height: 100%;
+    width: 30%;
+}
+
+.strength-medium {
+    background-color: #f39c12;
+    height: 100%;
+    width: 60%;
+}
+
+.strength-strong {
+    background-color: #2ecc71;
+    height: 100%;
+    width: 100%;
+}
+
+.strength-text {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 5px;
+}
+
+.error-message {
+    font-size: 11px;
+    color: #e74c3c;
+    margin-top: 5px;
+    min-height: 16px;
+}
+
+.credential-footer {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 15px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.submit-btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.3s;
+}
+
+.submit-btn:hover {
+    background-color: #2980b9;
+}
+
+.credential-validity {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .credential-body {
+        flex-direction: column;
+        padding: 20px;
+    }
+    
+    .credential-photo-section {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    
+    .credential-photo-preview {
+        margin: 0 auto 15px;
+    }
+    
+    .credential-fields {
+        grid-template-columns: 1fr;
+    }
+    
+    .password-field {
+        grid-column: span 1;
+    }
+    
+    .credential-qr-section {
+        width: 100%;
+        margin-top: 20px;
+    }
+    
+    .qr-placeholder {
+        margin: 0 auto;
+    }
+    
+    .credential-footer {
+        flex-direction: column;
+        gap: 15px;
+    }
+}
+/* Estilos específicos para el módulo de credencial */
+.credential-section {
+    padding: 20px;
+    margin-left: 250px; /* Ajuste para sidebar */
+    background-color: #f5f7fa;
+    min-height: calc(100vh - 60px); /* Ajuste para header */
+}
+
+.credential-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0;
+}
+
+/* Resto de los estilos de la credencial (igual que antes)... */
+
+/* Asegurar que no afecte otros elementos */
+body.credential-page {
+    overflow-x: hidden;
+}
+
+.credential-page .header,
+.credential-page .sidebar,
+.credential-page .footer {
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+.credential-page .sidebar {
+    width: 250px;
+    height: 100vh;
+}
+
+.credential-page .main-content {
+    margin-left: 250px;
+    padding-top: 60px;
+}

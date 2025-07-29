@@ -19,16 +19,17 @@ header('Content-Type: application/json');
 
 // Consulta para obtener la última ubicación de cada usuario
 $sql = "
-    SELECT u.nom_user, u.apel_user, g1.id_user, g1.latitude, g1.longitude, 
-           g1.speed, g1.altitude, g1.satelites, g1.timestamp
-    FROM gps_data g1
-    INNER JOIN (
-        SELECT id_user, MAX(timestamp) AS last_timestamp
-        FROM gps_data
-        GROUP BY id_user
-    ) g2 ON g1.id_user = g2.id_user AND g1.timestamp = g2.last_timestamp
-    INNER JOIN user u ON g1.id_user = u.id_user
-    ORDER BY g1.id_user;
+    SELECT 
+        u.id_user, u.nom_user, u.apel_user,
+        g.latitude, g.longitude, g.speed, g.altitude, g.satelites, g.timestamp
+    FROM user u
+    LEFT JOIN gps_data g ON g.id_user = u.id_user AND g.timestamp = (
+        SELECT MAX(timestamp) 
+        FROM gps_data 
+        WHERE id_user = u.id_user
+    )
+    WHERE u.status_user = 1  -- Opcional
+    ORDER BY u.id_user;
 ";
 
 try {

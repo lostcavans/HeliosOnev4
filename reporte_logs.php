@@ -59,7 +59,7 @@ $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reporte de Logs (Login/Logout)</title>
+    <title>Reporte de aceso (Login/Logout)</title>
     <link rel="stylesheet" href="css/main.css">
     <style>
         table {
@@ -182,7 +182,7 @@ $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <section class="full-box dashboard-contentPage">
     <?php include 'navbar.php'; ?>
-    <h2>Reporte de Logs (Login/Logout)</h2>
+    <h2>Reporte de aceso (Login/Logout)</h2>
     <!-- Botón para descargar el PDF -->
 <div class="download-box">
     <form method="GET" action="generate_pdf.php">

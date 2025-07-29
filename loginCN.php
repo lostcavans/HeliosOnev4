@@ -1,93 +1,90 @@
 <?php
-session_start();
+// loginCN.php - Versión mejorada
+
+// Iniciar sesión segura
+require_once 'auth_check.php';
+secure_session_start();
+
 header('Content-Type: application/json');
 
-// Incluir la conexión a la base de datos
-require 'db.php';
-
-// Obtener los datos enviados por POST
-$email = $_POST['email'] ?? '';
-$password = $_POST['password'] ?? '';
-
-// Validar que los datos no estén vacíos
-if (empty($email) || empty($password)) {
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'Email y contraseña son obligatorios.'
-    ]);
-    exit;
+// Validar método de solicitud
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    die(json_encode(['status' => 'error', 'message' => 'Método no permitido']));
 }
 
-// Preparar la consulta para verificar el usuario por email
-$sql = "SELECT * FROM user WHERE email_user = ?";
-$stmt = $pdo->prepare($sql);
-$stmt->execute([$email]);
-$user = $stmt->fetch();
+// Validar y limpiar datos
+$email = filter_var(trim($_POST['email'] ?? ''), FILTER_SANITIZE_EMAIL);
+$password = $_POST['password'] ?? '';
 
-if ($user) {
-    // Verificar si el usuario está activo
+// Validaciones
+if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    http_response_code(400);
+    die(json_encode(['status' => 'error', 'message' => 'Email inválido']));
+}
+
+if (empty($password)) {
+    http_response_code(400);
+    die(json_encode(['status' => 'error', 'message' => 'Contraseña requerida']));
+}
+
+// Conexión a base de datos
+require 'db.php';
+
+try {
+    // Buscar usuario
+    $stmt = $pdo->prepare("SELECT * FROM user WHERE email_user = ? LIMIT 1");
+    $stmt->execute([$email]);
+    $user = $stmt->fetch();
+
+    if (!$user) {
+        error_log("Intento de login fallido para: $email");
+        http_response_code(401);
+        die(json_encode(['status' => 'error', 'message' => 'Credenciales incorrectas']));
+    }
+
+    // Verificar estado de la cuenta
     if ($user['status_user'] == 0) {
-        // Usuario desactivado
-        echo json_encode([
-            'status' => 'deactivated',
-            'message' => 'Tu cuenta ha sido desactivada, contacta con soporte.'
-        ]);
-        exit;
+        http_response_code(403);
+        die(json_encode(['status' => 'deactivated', 'message' => 'Cuenta desactivada']));
     }
 
-    // Comparar la contraseña proporcionada con la almacenada en la base de datos
-    if ($password === $user['pass_user']) { // Nota: usar hash en producción
-        // Guardar datos en la sesión
-        $_SESSION['id_user'] = $user['id_user'];
-        $_SESSION['id_cargo'] = $user['id_cargo'];
-        $_SESSION['full_name'] = $user['nom_user'] . ' ' . $user['apel_user'];
-
-        // Obtener la IP del cliente
-        $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
-        
-        // Si está detrás de un proxy, intentar obtener la IP real
-        if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-        } elseif (isset($_SERVER['HTTP_CLIENT_IP'])) {
-            $ip = $_SERVER['HTTP_CLIENT_IP'];
-        }
-        
-        // Asegurarse de que la IP sea IPv4
-        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
-            // Si la IP es IPv6, se puede cambiar por IPv4
-            $ip = '127.0.0.1'; // Valor por defecto para IPv6
-        }
-
-        // Intentar obtener la MAC (no siempre será posible)
-        $mac = 'unknown';
-        if (PHP_OS_FAMILY !== 'Windows') {
-            $macCommand = "ip link show | awk '/ether/ {print $2}'";
-            $mac = shell_exec($macCommand) ?: 'unknown';
-        }
-
-        // Registrar la fecha, hora, estado de inicio de sesión, IP y MAC en la tabla reg_user
-        $sql = "INSERT INTO reg_user (id_user, datetime, log, ip, mac) VALUES (?, NOW(), 1, ?, ?)";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$user['id_user'], $ip, $mac]);
-
-        // Respuesta exitosa
-        echo json_encode([
-            'status' => 'success',
-            'full_name' => $_SESSION['full_name'],
-            'id_cargo' => $_SESSION['id_cargo'] // Opcional: devolver el id_cargo en la respuesta
-        ]);
-    } else {
-        // Contraseña incorrecta
-        echo json_encode([
-            'status' => 'error',
-            'message' => 'Credenciales incorrectas.'
-        ]);
+    // Verificar contraseña
+    if (!password_verify($password, $user['pass_user'])) {
+        error_log("Intento de login con contraseña incorrecta para: $email");
+        http_response_code(401);
+        die(json_encode(['status' => 'error', 'message' => 'Credenciales incorrectas']));
     }
-} else {
-    // Usuario no encontrado
+
+    // Configurar datos de sesión (parte a modificar)
+$_SESSION = [
+    'id_user' => $user['id_user'],  // Cambiado de 'id_user' a 'user_id'
+    'id_cargo' => $user['id_cargo'],
+    'loggedin' => true,
+    'last_activity' => time(),
+    'ip_address' => $_SERVER['REMOTE_ADDR'],
+    'user_agent' => $_SERVER['HTTP_USER_AGENT'],
+    'full_name' => $user['nom_user'] . ' ' . $user['apel_user']
+];
+
+    // Registrar acceso
+    $pdo->prepare("INSERT INTO reg_user (id_user, datetime, log, ip) VALUES (?, NOW(), 1, ?)")
+        ->execute([$user['id_user'], $_SERVER['REMOTE_ADDR']]);
+
+    // Respuesta exitosa
     echo json_encode([
-        'status' => 'error',
-        'message' => 'Credenciales incorrectas.'
-    ]);
+    'status' => 'success',
+    'redirect' => 'map.php',
+    'user' => [
+        'id' => $user['id_user'],
+        'name' => $user['nom_user'] . ' ' . $user['apel_user'],
+        'role' => $user['id_cargo']
+    ]
+]);
+
+} catch (PDOException $e) {
+    error_log("Error en login: " . $e->getMessage());
+    http_response_code(500);
+    echo json_encode(['status' => 'error', 'message' => 'Error en el servidor']);
 }
 ?>

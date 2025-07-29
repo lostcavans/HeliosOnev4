@@ -2,6 +2,9 @@
 if (session_status() == PHP_SESSION_NONE) {
     session_start(); // Inicia sesión solo si no hay una sesión activa
 }
+
+// Inicializar el contador de notificaciones si no está definido
+$notification_count = $_SESSION['notification_count'] ?? 0;
 ?>
 <style>
 .dashboard-Navbar .list-unstyled {
@@ -32,6 +35,17 @@ if (session_status() == PHP_SESSION_NONE) {
     margin-left: 100px; /* Empuja el nombre del usuario hacia la derecha */
     white-space: nowrap; /* Evita el corte del nombre en varias líneas */
 }
+
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #e74c3c;
+    color: white;
+    border-radius: 50%;
+    padding: 3px 6px;
+    font-size: 12px;
+}
 </style>
 <!-- NavBar -->
 <nav class="full-box dashboard-Navbar">
@@ -39,10 +53,12 @@ if (session_status() == PHP_SESSION_NONE) {
         <li class="pull-left">
             <a href="#!" class="btn-menu-dashboard"><i class="zmdi zmdi-more-vert"></i></a>
         </li>
-        <li>
+        <li style="position: relative;">
             <a href="#!" class="btn-Notifications-area">
                 <i class="zmdi zmdi-notifications-none"></i>
-                <span class="badge">3</span>
+                <?php if ($notification_count > 0): ?>
+                    <span class="badge notification-badge"><?php echo $notification_count; ?></span>
+                <?php endif; ?>
             </a>
         </li>
         <li>
